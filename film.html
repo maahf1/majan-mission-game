@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2210%22 fill=%22%234de8ff%22/%3E%3Cellipse cx=%2216%22 cy=%2216%22 rx=%2215%22 ry=%225%22 fill=%22none%22 stroke=%22%23ffb547%22 stroke-width=%222%22 transform=%22rotate(-25 16 16)%22/%3E%3C/svg%3E">
+  <title>Majan Mission – film</title>
+  <link href="vendor/fonts/fonts.css" rel="stylesheet"><!-- saved copy of Google Fonts, works offline -->
+  <style>
+    html, body { margin: 0; background: #000; overflow: hidden; }
+    #out { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; display: block; margin: auto; }
+    #gl { display: none; }
+    #controls { position: fixed; bottom: 8px; left: 8px; color: #8af; font: 12px monospace; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/build/three.module.js",
+        "three/addons/": "./vendor/three/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="out" width="1920" height="1080"></canvas>
+  <div id="controls"></div>
+  <script type="module" src="js/film.js"></script>
+</body>
+</html>

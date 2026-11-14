@@ -1,0 +1,194 @@
+/* Majan Space Center: first-person HUD on top of style.css */
+body.center { cursor: default; }
+
+#crosshair {
+  position: fixed; top: 50%; left: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; z-index: 15;
+  border-radius: 50%; background: rgba(255,255,255,.9); box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 0 12px rgba(77,232,255,.8);
+  transition: transform .15s, background .15s; pointer-events: none;
+}
+#crosshair.hot { transform: scale(1.8); background: var(--amber); }
+
+#prompt {
+  position: fixed; top: calc(50% + 28px); left: 50%; transform: translateX(-50%); z-index: 15;
+  padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; white-space: nowrap; pointer-events: none;
+}
+#prompt kbd, .keys kbd {
+  font-family: var(--mono); font-size: 12px; padding: 2px 7px; border-radius: 6px; margin-inline-end: 6px;
+  background: rgba(77,232,255,.15); border: 1px solid var(--stroke-hi); color: var(--cyan);
+}
+#prompt .bad { color: var(--bad); }
+
+#objectives { position: fixed; top: 82px; inset-inline-start: 16px; width: 300px; padding: 14px; z-index: 14; font-size: 13px; }
+#contract-line { margin: 6px 0 8px; font-weight: 600; color: var(--amber); line-height: 1.5; }
+#obj-list { margin: 0; padding-inline-start: 18px; display: grid; gap: 4px; color: #b9cbe3; line-height: 1.5; }
+#obj-list li.done { color: var(--ok); text-decoration: line-through; opacity: .75; }
+#obj-list li.now { color: #fff; font-weight: 600; }
+
+#holding {
+  position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 14;
+  padding: 10px 16px; border-radius: 12px; font-size: 14px; display: flex; gap: 10px; align-items: center;
+}
+#holding .lvl { color: var(--cyan); font-family: var(--mono); }
+
+.chip.cash { color: var(--ok); font-family: var(--mono); font-weight: 700; }
+
+.overlay { position: fixed; inset: 0; z-index: 25; background: rgba(1,4,11,.55); backdrop-filter: blur(4px); }
+.start-card { width: min(520px, 92vw); text-align: center; }
+.start-card h1 {
+  margin: 6px 0; font-size: clamp(34px, 5vw, 54px);
+  background: linear-gradient(180deg, #fff 30%, #9fe9ff 75%, #4de8ff); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.start-card p { color: #b9cbe3; }
+.keys { list-style: none; padding: 0; margin: 14px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: start; font-size: 13px; }
+.start-card .cta { width: 100%; }
+.link { display: block; margin-top: 10px; line-height: 40px; text-decoration: none; text-align: center; }
+
+/* Terminal */
+.term { width: min(860px, 94vw); max-height: 84vh; padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.term-head { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--stroke); }
+.tabs { display: flex; gap: 6px; flex: 1; }
+.tabs button { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--stroke); background: transparent; cursor: pointer; font-size: 13px; }
+.tabs button.on { background: var(--cyan); color: #04111d; border-color: var(--cyan); font-weight: 700; }
+.x { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--stroke); background: transparent; cursor: pointer; }
+#term-body { padding: 16px 18px; overflow-y: auto; display: grid; gap: 10px; }
+.row-card { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--stroke); background: rgba(255,255,255,.03); }
+.row-card h3 { margin: 0; font-size: 16px; }
+.row-card p { margin: 0; color: #a9bad3; font-size: 13px; line-height: 1.6; grid-column: 1; }
+.row-card .meta { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.row-card .pay { font-family: var(--mono); color: var(--ok); font-weight: 700; }
+.row-card button { grid-row: 1 / span 3; grid-column: 2; height: 40px; padding: 0 16px; border-radius: 10px; border: 0; cursor: pointer; background: var(--cyan); color: #04111d; font-weight: 700; }
+.row-card button:disabled { background: rgba(255,255,255,.1); color: var(--muted); cursor: not-allowed; }
+.row-card.active { border-color: var(--amber); box-shadow: 0 0 18px rgba(255,181,71,.18) inset; }
+.section-title { margin: 6px 0 0; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.cart-note { font-size: 13px; color: var(--muted); }
+
+/* Touch */
+#touch { position: fixed; inset: 0; z-index: 16; pointer-events: none; }
+#stick { position: absolute; bottom: 28px; inset-inline-start: 28px; width: 130px; height: 130px; border-radius: 50%; background: rgba(255,255,255,.06); border: 1px solid var(--stroke); pointer-events: auto; touch-action: none; }
+#knob { position: absolute; left: 40px; top: 40px; width: 50px; height: 50px; border-radius: 50%; background: rgba(77,232,255,.35); border: 1px solid var(--cyan); }
+#t-use, #t-drop { position: absolute; bottom: 40px; width: 70px; height: 70px; border-radius: 50%; border: 1px solid var(--stroke-hi); background: rgba(77,232,255,.15); color: #fff; font-family: var(--mono); font-size: 22px; font-weight: 700; pointer-events: auto; }
+#t-use { inset-inline-end: 28px; }
+#t-drop { inset-inline-end: 112px; width: 56px; height: 56px; bottom: 30px; font-size: 18px; }
+
+@media (max-width: 860px) {
+  #objectives { width: auto; inset-inline: 8px; top: 64px; padding: 10px; font-size: 12px; }
+  .keys { grid-template-columns: 1fr; }
+}
+
+/* Start screen row: tutorial + restart */
+.start-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.start-row .ghost, .start-row .cta { width: 100%; }
+#confirm .start-row { grid-template-columns: 1.4fr 1fr; align-items: center; }
+#confirm h2 { margin: 0 0 6px; color: var(--amber); }
+
+/* Tutorial card */
+#tut {
+  position: fixed; bottom: 18px; inset-inline-start: 16px; z-index: 30; width: min(380px, calc(100vw - 32px));
+  padding: 16px 16px 14px; font-size: 14px; line-height: 1.65; animation: tutIn .35s cubic-bezier(.2,.8,.2,1) both;
+}
+#tut h3 { margin: 6px 0 4px; font-size: 18px; color: var(--text); }
+#tut p { margin: 0; color: #c4d4ea; }
+#tut .tut-dist { margin-top: 6px; color: var(--cyan); font-size: 13px; min-height: 1em; }
+#tut .tut-btns { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+#tut .tut-next { height: 38px; padding: 0 14px; border-radius: 10px; border: 0; cursor: pointer; background: var(--cyan); color: #04111d; font-weight: 700; }
+#tut .tut-next kbd { font-size: 11px; opacity: .7; margin-inline-start: 4px; }
+#tut .tut-end { padding: 0 12px; height: 38px; }
+@keyframes tutIn { from { opacity: 0; transform: translateY(14px); } }
+@media (max-width: 760px) { #tut { bottom: 150px; font-size: 13px; } }
+
+/* Many buttons in the top bar: on narrow screens the brand shrinks to the logo and the buttons scroll sideways */
+@media (max-width: 1100px) {
+  body.center .rail-right { min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  body.center .rail-right::-webkit-scrollbar { display: none; }
+  body.center .rail-right > * { flex: none; }
+}
+@media (max-width: 760px) {
+  body.center .brand > div { display: none; }
+}
+
+/* Mission Control: orbit and rocket on the left, readiness and launch on the right */
+.mc { width: min(980px, 95vw); max-height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.mc-contract { flex: 1; font-weight: 600; color: var(--amber); font-size: 14px; }
+.mc-body { display: grid; grid-template-columns: 1.1fr 1fr; gap: 18px; padding: 16px 18px; overflow-y: auto; }
+.mc-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.mc-opts { display: grid; gap: 8px; }
+.mc-opt {
+  display: grid; gap: 3px; text-align: start; padding: 10px 12px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--stroke); background: rgba(255,255,255,.03); color: var(--text); font: inherit;
+}
+.mc-opt b { font-size: 15px; }
+.mc-opt span { font-size: 12px; color: #a9bad3; }
+.mc-opt em { font-style: normal; font-size: 12px; font-weight: 700; }
+.mc-opt.sel { border-color: var(--cyan); background: rgba(77,232,255,.12); box-shadow: 0 0 18px rgba(77,232,255,.15) inset; }
+.mc-opt:hover { border-color: var(--stroke-hi); }
+.mc-from { font-size: 12px; color: var(--amber); }
+.mc-meter { display: grid; gap: 4px; margin-bottom: 8px; }
+.mc-meter .row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--muted); }
+.mc-meter .val { color: var(--text); font-weight: 600; }
+.mc-meter .track { height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); overflow: hidden; }
+.mc-meter .track i { display: block; height: 100%; background: var(--cyan); border-radius: 3px; }
+.mc-meter.warn .track i { background: var(--amber); }
+.mc-meter.bad .track i { background: var(--bad); }
+.mc-meter.bad .val { color: var(--bad); }
+.mc-tip { font-size: 14px; padding: 10px 12px; border-radius: 10px; border-inline-start: 3px solid var(--ok); background: rgba(67,230,160,.08); }
+.mc-tip.bad { border-color: var(--bad); background: rgba(255,95,109,.08); }
+.mc .cta { width: 100%; margin-top: 4px; }
+@media (max-width: 760px) { .mc-body { grid-template-columns: 1fr; } }
+
+#holding .kind { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; color: var(--k); border: 1px solid var(--k); }
+.row-card .bad-text { color: var(--bad); font-weight: 700; }
+.row-card .fit { margin-inline-start: 6px; vertical-align: middle; }
+/* Pop-up messages move down while a computer or Mission Control is open, so they don't cover its tabs */
+body:has(.overlay:not([hidden])) #toasts { top: auto; bottom: 24px; }
+.mc-tip.warn { border-color: var(--amber); background: rgba(255,181,71,.08); }
+
+/* Countdown over the liftoff seen through the window */
+#liftoff {
+  position: fixed; top: 22%; left: 50%; transform: translateX(-50%); z-index: 20; pointer-events: none;
+  font-size: clamp(54px, 9vw, 110px); font-weight: 700; color: #fff;
+  text-shadow: 0 0 30px rgba(77,232,255,.7), 0 2px 12px rgba(0,0,0,.6);
+}
+#liftoff.pop { animation: liftPop .55s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes liftPop { from { opacity: 0; transform: translateX(-50%) scale(1.5); } }
+
+/* Mission Control: more plan choices (end of mission, ground stations, tests) */
+.mc-opt em.good { color: var(--ok); }
+.mc-opt em.bad { color: var(--bad); }
+.mc-col .section-title { color: var(--cyan); font-size: 12px; margin-top: 4px; }
+
+/* Liftoff film: hide the game panels and show cinema bars */
+body.cine > *:not(canvas):not(#liftoff) { opacity: 0 !important; pointer-events: none; transition: opacity .35s; }
+body.cine::before, body.cine::after { content: ''; position: fixed; left: 0; right: 0; height: 9.5vh; background: #000; z-index: 60; pointer-events: none; }
+body.cine::before { top: 0; }
+body.cine::after { bottom: 0; }
+body.cine #liftoff { z-index: 70; }
+#liftoff { transition: opacity .8s; }
+
+/* The eight decisions of the challenge, as a status row in Mission Control */
+.mc-eight { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 18px 0; }
+.mc-eight span { flex: 1 1 auto; justify-content: center; display: flex; align-items: center; gap: 6px; min-width: 0; padding: 6px 8px; border: 1px solid var(--stroke); border-radius: 999px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-eight i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.mc-eight .warn i { background: var(--amber); }
+.mc-eight .bad i { background: var(--bad); }
+@media (max-width: 900px) { .mc-eight { grid-template-columns: repeat(4, 1fr); } }
+.mc-review { align-self: flex-start; }
+
+/* Mission console: the orbit phase inside the center */
+.console { z-index: 40; display: flex; flex-direction: column; background: #01040b; backdrop-filter: none; }
+.console[hidden] { display: none; }
+.console-head { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--stroke); font: 600 12px var(--mono); letter-spacing: .14em; color: var(--cyan); }
+.console-head b { width: 9px; height: 9px; border-radius: 50%; background: var(--bad); animation: console-live 1.2s ease-in-out infinite; }
+.console-head span:last-child { margin-inline-start: auto; color: var(--muted); letter-spacing: 0; font: 13px var(--font); }
+@keyframes console-live { 50% { opacity: .25; } }
+#console-frame { flex: 1; width: 100%; border: 0; background: #01040b; }
+
+/* Team play: whose decision it is at this station */
+.team-line { margin: 6px 0 10px; padding: 7px 12px; border-radius: 8px; background: rgba(167,139,255,.12); border: 1px solid rgba(167,139,255,.45); color: #d9ccff; font-size: 13.5px; font-weight: 600; line-height: 1.5; }
+
+/* Notice board at the Duqm Space Settlement */
+.st-lead { font-size: 14px; color: #d5e2f5; }
+.st-list { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 6px; font-size: 13.5px; }
+.st-list li { padding: 7px 12px; border-radius: 8px; border: 1px solid var(--stroke); color: #8193ad; }
+.st-list li b { color: #8193ad; margin-inline-end: 8px; font-family: var(--mono); }
+.st-list li.on { border-color: rgba(67,230,160,.55); background: rgba(67,230,160,.1); color: #e8f4ff; }
+.st-list li.on b { color: var(--amber); }

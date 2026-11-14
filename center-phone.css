@@ -1,0 +1,68 @@
+/* Phones and tablets (body.touch is set by js/center/main.js when the pointer is coarse).
+   The stick is always on the left and the action buttons on the right, in both languages. */
+
+#btn-menu { display: none; }
+#phone-menu { position: fixed; top: 56px; inset-inline-end: 8px; z-index: 45; display: grid; gap: 6px; padding: 8px; width: 210px; border-radius: 14px; }
+#phone-menu[hidden] { display: none; }
+#phone-menu .chip-btn { width: 100%; height: 40px; justify-content: center; }
+.keys-touch, .rotate-hint { display: none; }
+
+body.touch { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; overscroll-behavior: none; }
+body.touch #gl { touch-action: none; }
+body.touch .overlay, body.touch .modal, body.touch #phone-menu { touch-action: pan-y; }
+
+/* Top bar: money and stars stay, the rest goes into the menu */
+body.touch #btn-menu { display: inline-flex; font-size: 18px; min-width: 44px; justify-content: center; }
+body.touch .rail-right > .chip-btn:not(#btn-menu) { display: none; }
+body.touch .brand > div { display: none; }
+
+/* Objectives: one line (the step you are on); tap to see them all */
+body.touch #objectives { top: 54px; inset-inline: auto; inset-inline-end: 8px; width: auto; max-width: min(48vw, 340px); padding: 7px 12px; font-size: 12.5px; pointer-events: auto; }
+body.touch #objectives .eyebrow { display: none; }
+body.touch #objectives #obj-list { margin: 2px 0 0; }
+body.touch #objectives:not(.open) #obj-list li:not(.now) { display: none; }
+body.touch #objectives:not(.open) #obj-list { list-style: none; padding: 0; }
+body.touch #objectives::after { content: '▾'; position: absolute; inset-inline-end: 8px; bottom: 2px; font-size: 11px; color: var(--cyan); }
+body.touch #objectives.open::after { content: '▴'; }
+
+/* Tutorial card: top corner, away from the stick */
+body.touch #tut { bottom: auto; top: 54px; inset-inline-start: 8px; width: min(300px, 44vw); padding: 10px 12px; font-size: 12.5px; line-height: 1.5; }
+body.touch #tut h3 { font-size: 15px; margin: 2px 0; }
+
+/* Controls */
+body.touch #stick { inset-inline: auto; left: max(20px, env(safe-area-inset-left)); bottom: 20px; width: 136px; height: 136px; background: rgba(255,255,255,.08); }
+body.touch #knob { left: 43px; top: 43px; }
+body.touch #t-use { inset-inline: auto; right: max(22px, env(safe-area-inset-right)); bottom: 32px; width: 86px; height: 86px; font-family: inherit; font-size: 14px; font-weight: 700; pointer-events: auto; }
+body.touch #t-use.ready { background: rgba(77,232,255,.45); border-color: var(--cyan); box-shadow: 0 0 24px rgba(77,232,255,.6); }
+body.touch #t-drop { inset-inline: auto; right: calc(max(22px, env(safe-area-inset-right)) + 100px); bottom: 24px; width: 64px; height: 64px; font-family: inherit; font-size: 13px; font-weight: 700; pointer-events: auto; }
+body.touch #t-drop[hidden] { display: none; }
+body.touch #prompt kbd { display: none; }
+body.touch #prompt { bottom: 128px; font-size: 13px; max-width: 46vw; }
+
+/* Start card: touch help instead of keys */
+body.touch .keys { display: none; }
+body.touch .keys-touch { display: grid; gap: 6px; list-style: none; margin: 8px 0 12px; padding: 0; font-size: 13.5px; color: #c4d4ea; }
+body.touch .keys-touch .kt-ico { display: inline-block; width: 26px; text-align: center; color: var(--cyan); }
+@media (orientation: portrait) {
+  body.touch .rotate-hint { display: block; margin: 0 0 10px; padding: 8px 12px; border-radius: 10px; background: rgba(255,181,71,.14); border: 1px solid rgba(255,181,71,.5); color: var(--amber); font-weight: 600; font-size: 13.5px; }
+}
+body.touch #start a.link { display: block; margin-top: 10px; padding: 10px; border: 1px solid var(--stroke-hi); border-radius: 10px; text-align: center; text-decoration: none; }
+
+/* Short screens (a phone held sideways): cards fit the height and scroll inside */
+@media (max-height: 520px) {
+  .overlay .modal { max-height: calc(100dvh - 10px); overflow-y: auto; }
+  .start-card { padding: 14px 18px; width: min(560px, 96vw); }
+  .start-card h1 { font-size: 26px; margin: 4px 0; }
+  .start-card p { font-size: 13px; margin: 4px 0 6px; }
+  .start-card .eyebrow { font-size: 10px; }
+  .mc, .term { max-height: calc(100dvh - 8px); width: calc(100vw - 10px); }
+  .mc .mc-body { overflow-y: auto; }
+  .info { max-height: calc(100dvh - 10px); overflow-y: auto; }
+}
+/* Narrow screens (a phone held upright) */
+@media (max-width: 520px) {
+  body.touch #objectives { max-width: 62vw; }
+  body.touch #tut { width: min(300px, 70vw); top: 96px; }
+  body.touch #stick { width: 120px; height: 120px; }
+  body.touch #knob { left: 35px; top: 35px; }
+}

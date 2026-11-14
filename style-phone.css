@@ -1,0 +1,28 @@
+/* Quick design mode and mission console on a phone held sideways (short screens),
+   and the console inside the Space Center (body.embed), which has its own header. */
+
+body.embed #rail { display: none; }
+body.embed #hud { top: 12px; }
+body.embed .credit { display: none; }
+
+@media (max-height: 480px) {
+  /* Orbit: the telemetry is a narrow column on one side, the timeline sits on the other */
+  #hud { width: 250px; inset-inline: auto; inset-inline-start: 8px; top: 62px; padding: 8px 10px; gap: 6px; }
+  body.embed #hud { top: 8px; }
+  #hud .hour { font-size: 17px; }
+  #hud .eyebrow, #hud .hud-orbit { font-size: 10px; }
+  .timeline { left: auto; right: auto; inset-inline-end: 8px; margin: 0; width: min(500px, 52vw); bottom: 8px; padding: 22px 12px 6px; }
+  .credit { display: none; }
+
+  /* A decision: the whole card and both answers fit the screen, above everything else */
+  #event { z-index: 30; width: min(580px, 66vw); max-height: calc(100dvh - 12px); padding: 12px 16px; line-height: 1.5; }
+  #event h2 { font-size: 20px; margin: 2px 0 4px; }
+  #event p { font-size: 13px; margin: 4px 0; }
+  #event .real { font-size: 12px; padding-top: 6px; }
+  #event .choice { padding: 8px 12px; font-size: 13.5px; margin-top: 6px; }
+
+  /* Results and other cards scroll inside the screen */
+  .modal { max-height: calc(100dvh - 12px); }
+  .results { padding: 14px 18px; }
+  .results .big-stars { font-size: 40px; margin: 0; }
+}

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2210%22 fill=%22%234de8ff%22/%3E%3Cellipse cx=%2216%22 cy=%2216%22 rx=%2215%22 ry=%225%22 fill=%22none%22 stroke=%22%23ffb547%22 stroke-width=%222%22 transform=%22rotate(-25 16 16)%22/%3E%3C/svg%3E">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Majan Space Center | مركز مجان الفضائي</title>
+  <link href="vendor/fonts/fonts.css" rel="stylesheet"><!-- saved copy of Google Fonts, works offline -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style3.css">
+  <link rel="stylesheet" href="style4.css">
+  <link rel="stylesheet" href="center.css">
+  <link rel="stylesheet" href="center-phone.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/build/three.module.js",
+        "three/addons/": "./vendor/three/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body class="center">
+  <canvas id="gl"></canvas>
+
+  <!-- Top bar -->
+  <header id="rail" class="glass">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div><b data-i18n="c_title"></b><small class="mono" id="c-zone"></small></div>
+    </div>
+    <div class="rail-right">
+      <div class="chip cash" id="c-cash"></div>
+      <div id="stars-chip" class="chip">★ <span id="stars-total">0</span></div>
+      <button id="btn-tut" class="chip-btn" type="button" data-i18n="tut_rail"></button>
+      <button id="btn-restart" class="chip-btn" type="button" data-i18n="c_restart"></button>
+      <button id="btn-team" class="chip-btn" type="button"></button>
+      <button id="btn-gfx" class="chip-btn" type="button"></button>
+      <button id="btn-sound" class="chip-btn" type="button"></button>
+      <button id="btn-lang" class="chip-btn" type="button"></button>
+      <button id="btn-menu" class="chip-btn" type="button" aria-label="Menu">☰</button>
+    </div>
+  </header>
+  <div id="phone-menu" class="glass" hidden></div>
+
+  <!-- In-world HUD -->
+  <div id="crosshair" aria-hidden="true"></div>
+  <div id="prompt" class="glass" hidden></div>
+  <aside id="objectives" class="glass brackets">
+    <div class="eyebrow" data-i18n="c_objectives"></div>
+    <div id="contract-line"></div>
+    <ol id="obj-list"></ol>
+  </aside>
+  <div id="holding" class="glass" hidden></div>
+  <div id="toasts"></div>
+
+  <!-- Start / pause screen -->
+  <section id="start" class="overlay">
+    <div class="glass modal brackets start-card">
+      <div class="eyebrow">NASA Space Apps 2026 · Challenge 13 · Ibra</div>
+      <h1 data-i18n="c_title"></h1>
+      <p data-i18n="c_intro"></p>
+      <ul class="keys">
+        <li><kbd>W A S D</kbd> <span data-i18n="c_k_move"></span></li>
+        <li><kbd>🖱</kbd> <span data-i18n="c_k_look"></span></li>
+        <li><kbd>Shift</kbd> <span data-i18n="c_k_run"></span></li>
+        <li><kbd>E</kbd> / <kbd>Click</kbd> <span data-i18n="c_k_use"></span></li>
+        <li><kbd>Q</kbd> <span data-i18n="c_k_drop"></span></li>
+        <li><kbd>Esc</kbd> <span data-i18n="c_k_pause"></span></li>
+      </ul>
+      <ul class="keys-touch">
+        <li><span class="kt-ico">◉</span> <span data-i18n="ph_move"></span></li>
+        <li><span class="kt-ico">↔</span> <span data-i18n="ph_look"></span></li>
+        <li><span class="kt-ico">✋</span> <span data-i18n="ph_tap"></span></li>
+      </ul>
+      <p class="rotate-hint" data-i18n="ph_rotate"></p>
+      <button id="btn-start" class="cta" type="button" data-i18n="c_start"></button>
+      <div class="start-row">
+        <button id="btn-start-tut" class="ghost" type="button" data-i18n="tut_btn"></button>
+        <button id="btn-start-restart" class="ghost" type="button" data-i18n="c_restart"></button>
+      </div>
+      <a class="ghost link" href="index.html" data-i18n="c_classic"></a>
+    </div>
+  </section>
+
+  <!-- Restart confirmation -->
+  <section id="confirm" class="overlay" hidden>
+    <div class="glass modal brackets start-card">
+      <h2 data-i18n="c_restart_h"></h2>
+      <p data-i18n="c_restart_q"></p>
+      <div class="start-row">
+        <button id="btn-restart-yes" class="cta" type="button" data-i18n="c_restart_yes"></button>
+        <button id="btn-restart-no" class="ghost" type="button" data-i18n="c_cancel"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Computer terminal -->
+  <section id="terminal" class="overlay" hidden>
+    <div class="glass modal brackets term">
+      <div class="term-head">
+        <div class="eyebrow">MAJAN OS v1.0</div>
+        <nav class="tabs">
+          <button type="button" data-tab="contracts" data-i18n="c_tab_contracts"></button>
+          <button type="button" data-tab="shop" data-i18n="c_tab_shop"></button>
+          <button type="button" data-tab="stock" data-i18n="c_tab_stock"></button>
+          <button type="button" data-tab="log" data-i18n="c_tab_log"></button>
+        </nav>
+        <button type="button" id="term-close" class="x" aria-label="Close">✕</button>
+      </div>
+      <p id="term-team" class="team-line" hidden></p>
+      <div id="term-body"></div>
+    </div>
+  </section>
+
+  <!-- Mission Control (launch console): orbit, rocket, forecast, launch -->
+  <section id="mc" class="overlay" hidden>
+    <div class="glass modal brackets mc">
+      <div class="term-head">
+        <div class="eyebrow" data-i18n="mc_title"></div>
+        <div id="mc-contract" class="mc-contract"></div>
+        <button type="button" id="mc-close" class="x" aria-label="Close">✕</button>
+      </div>
+      <div id="mc-eight" class="mc-eight"></div>
+      <p id="mc-team" class="team-line" hidden></p>
+      <div class="mc-body">
+        <div class="mc-col">
+          <h4 class="section-title" data-i18n="tab_orbit"></h4>
+          <div id="mc-orbits" class="mc-opts"></div>
+          <h4 class="section-title" data-i18n="sec_eom"></h4>
+          <div id="mc-eom" class="mc-opts"></div>
+          <h4 class="section-title" data-i18n="tab_rocket"></h4>
+          <div class="mc-from" data-i18n="rk_from"></div>
+          <div id="mc-rockets" class="mc-opts"></div>
+          <h4 class="section-title" data-i18n="sec_ground"></h4>
+          <div id="mc-ground" class="mc-opts"></div>
+          <h4 class="section-title" data-i18n="sec_test"></h4>
+          <div id="mc-tests" class="mc-opts"></div>
+        </div>
+        <div class="mc-col">
+          <div id="mc-meters"></div>
+          <div class="forecast mc-forecast">
+            <div class="line"><span data-i18n="forecast"></span><span id="mc-cov"></span></div>
+            <div class="stars" id="mc-stars"></div>
+            <div class="line"><span id="mc-odds"></span></div>
+            <div class="line"><span id="mc-fee"></span></div>
+            <div class="fc-note" data-i18n="fc_note"></div>
+          </div>
+          <button type="button" id="mc-review" class="chip-btn mc-review"></button>
+          <div id="mc-tip" class="mc-tip"></div>
+          <button id="mc-launch" class="cta" type="button" data-i18n="btn_launch"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="info-layer" class="layer" hidden><div id="info" class="glass modal brackets info"></div></div>
+
+  <!-- The mission console: the orbit phase runs here, inside the center -->
+  <section id="console" class="overlay console" hidden>
+    <div class="console-head"><b></b><span data-i18n="con_title"></span><span data-i18n="con_hint"></span></div>
+    <iframe id="console-frame" title="Mission console"></iframe>
+  </section>
+
+  <!-- Touch controls (phones and tablets) -->
+  <div id="touch" hidden>
+    <div id="stick"><div id="knob"></div></div>
+    <button id="t-use" type="button" data-i18n="ph_use"></button>
+    <button id="t-drop" type="button" data-i18n="ph_drop" hidden></button>
+  </div>
+
+  <script type="module" src="js/center/main.js"></script>
+</body>
+</html>

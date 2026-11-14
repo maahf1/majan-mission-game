@@ -1,0 +1,121 @@
+/* Real missions tab, how-to-play, about panel and the printable mission report. */
+
+/* --- Real missions ------------------------------------------------------------------------ */
+.rm-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 0 14px; }
+.rm-card { border: 1px solid var(--stroke); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; background: rgba(125, 210, 255, 0.04); }
+.rm-card.best { border-color: var(--cyan); }
+.rm-name { display: flex; flex-direction: column; gap: 2px; }
+.rm-name b { font-size: 15px; }
+.rm-name span, .rm-facts { font-size: 11.5px; color: var(--muted); }
+.rm-card p { margin: 0; font-size: 12.5px; line-height: 1.5; color: #c6d5ea; flex: 1; }
+.rm-facts { display: flex; justify-content: space-between; gap: 8px; font-family: var(--mono); }
+.rm-card em { font-style: normal; font-size: 12px; color: var(--ok); }
+.rm-h { margin: 16px 0 6px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+.rm-ladder { position: relative; height: 74px; margin: 4px 14px 2px; }
+.rm-ladder::before { content: ''; position: absolute; inset-inline: 0; top: 50%; height: 1px; background: var(--stroke-hi); }
+.rm-ladder u { position: absolute; top: 50%; transform: translate(-50%, 0); padding-top: 22px; text-decoration: none; font: 10px var(--mono); color: var(--muted); }
+.rm-ladder u::before { content: ''; position: absolute; left: 50%; top: -4px; width: 1px; height: 9px; background: var(--stroke-hi); }
+.rm-dot { position: absolute; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: #7fb6e6; }
+.rm-dot b { position: absolute; left: 50%; bottom: 9px; transform: translateX(-50%); font: 500 10px var(--font); color: #a9bad3; white-space: nowrap; }
+.rm-dot.low b { bottom: auto; top: 9px; }
+.rm-dot.you { width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; background: var(--amber); box-shadow: 0 0 0 3px rgba(255, 181, 71, .25); z-index: 2; }
+.rm-dot.you b { bottom: 17px; font-weight: 700; font-size: 11.5px; color: var(--amber); }
+
+.rm-scroll { overflow-x: auto; }
+.rm-table small { display: block; color: var(--muted); font-size: 11px; }
+.rm-table td { vertical-align: top; }
+.rm-table .rm-src { font: 10.5px var(--mono); color: var(--muted); }
+
+/* --- How to play, about -------------------------------------------------------------------- */
+.how { list-style: none; margin: 10px 0 12px; padding: 0; display: grid; gap: 10px; }
+.how li { display: flex; gap: 12px; align-items: flex-start; }
+.how li > b { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--cyan); color: var(--cyan); font: 600 14px var(--mono); }
+.how strong { display: block; font-size: 15px; }
+.how span { font-size: 13px; line-height: 1.55; color: #a9bad3; }
+.ab-list { margin: 4px 0 8px; padding-inline-start: 18px; font-size: 13px; line-height: 1.6; color: #a9bad3; }
+.chip-btn.pulse { border-color: var(--cyan); color: var(--cyan); animation: how-pulse 1.8s ease-in-out infinite; }
+@keyframes how-pulse { 50% { box-shadow: 0 0 0 6px rgba(77, 232, 255, 0.14); } }
+@media (prefers-reduced-motion: reduce) { .chip-btn.pulse { animation: none; } }
+
+/* --- Mission report: a white page over the game --------------------------------------------- */
+#report-layer { position: fixed; inset: 0; z-index: 300; overflow: auto; background: rgba(1, 4, 11, 0.94); padding: 14px 12px 60px; }
+.rep-bar { position: sticky; top: 0; z-index: 2; display: flex; gap: 10px; justify-content: center; padding: 6px 0 12px; }
+.rep-bar button { height: 40px; padding: 0 20px; border-radius: 999px; border: 1px solid #5d7a99; background: #0d1a2e; color: #e8f4ff; font: 600 14px var(--font); cursor: pointer; box-shadow: 0 4px 16px rgba(0, 0, 0, .45); }
+.rep-bar button.primary { background: var(--amber); border-color: var(--amber); color: #1b1200; }
+.rep-bar button:hover { filter: brightness(1.12); }
+.rep-paper { background: #fff; color: #17222f; max-width: 820px; margin: 0 auto; padding: 34px 38px 26px; border-radius: 6px; font: 13.5px/1.55 var(--font); }
+.rep-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.rep-eyebrow { font-size: 11.5px; letter-spacing: .04em; color: #5b6b7d; }
+.rep-paper h1 { margin: 2px 0 0; font-size: 23px; line-height: 1.25; color: #0c1a2a; }
+.rep-paper h2 { margin: 20px 0 8px; padding-bottom: 4px; font-size: 12.5px; letter-spacing: .05em; text-transform: uppercase; color: #0b5c8a; border-bottom: 1px solid #d7e0ea; }
+.rep-stars { font-size: 30px; line-height: 1; color: #e09a00; white-space: nowrap; }
+.rep-stars span { color: #d5dbe3; }
+.rep-meta, .rep-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 8px 18px; margin-top: 12px; }
+.rep-meta small, .rep-kpis small { display: block; font-size: 11px; color: #5b6b7d; }
+.rep-meta b { font-size: 14px; }
+.rep-kpis { grid-template-columns: repeat(5, 1fr); }
+.rep-kpis b { font-size: 15.5px; color: #0c1a2a; }
+.rep-mel th:not(:first-child), .rep-mel td:not(:first-child) { white-space: nowrap; }
+.rep-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.rep-table th, .rep-table td { text-align: start; padding: 5px 8px; border-bottom: 1px solid #e2e8ef; vertical-align: top; }
+.rep-table thead th { font-size: 11px; color: #5b6b7d; font-weight: 600; }
+.rep-table tfoot td { font-weight: 700; border-bottom: 0; }
+.rep-seg th { width: 118px; color: #0b5c8a; font-weight: 600; }
+.rep-cols { display: grid; grid-template-columns: 1.25fr 1fr; gap: 0 26px; }
+.rep-reqs, .rep-findings { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; font-size: 12.5px; }
+.rep-reqs li { display: flex; gap: 8px; }
+.rep-reqs li b { flex: none; width: 16px; }
+.rep-reqs .ok b { color: #12824f; }
+.rep-reqs .no b, .rep-reqs .no span { color: #b3261e; }
+.rep-findings li { padding-inline-start: 14px; position: relative; }
+.rep-findings li::before { content: ''; position: absolute; inset-inline-start: 2px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: #12824f; }
+.rep-findings li.bad::before { background: #b3261e; }
+.rep-quiz { margin: 10px 0 0; padding: 8px 12px; border: 1px solid #cfe3f1; border-radius: 6px; background: #f3f9fd; font-weight: 600; }
+.rep-real .rv-note { color: #44546a; font-size: 12px; }
+.rep-real .rm-card { border-color: #d7e0ea; background: #f7f9fc; }
+.rep-real .rm-card.best { border-color: #0b5c8a; }
+.rep-real .rm-card p { color: #2b3a4c; }
+.rep-real .rm-name span, .rep-real .rm-facts { color: #5b6b7d; }
+.rep-real .rm-card em { color: #12824f; }
+.rep-real .rm-h { color: #5b6b7d; }
+.rep-real .rm-ladder::before, .rep-real .rm-ladder u::before { background: #9fb0c3; }
+.rep-real .rm-ladder u, .rep-real .rm-dot b { color: #5b6b7d; }
+.rep-real .rm-dot { background: #3b82b8; }
+.rep-real .rm-dot.you { background: #e09a00; box-shadow: 0 0 0 3px rgba(224, 154, 0, .22); }
+.rep-real .rm-dot.you b { color: #a66f00; }
+.rep-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.rep-imgs figure { margin: 0; }
+.rep-imgs img { display: block; width: 100%; border-radius: 4px; }
+.rep-imgs figcaption, .rep-credit { font-size: 11px; color: #5b6b7d; margin-top: 4px; }
+.rep-foot { margin-top: 20px; padding-top: 10px; border-top: 1px solid #d7e0ea; font-size: 11px; color: #5b6b7d; }
+
+@media (max-width: 720px) {
+  .rm-cards { grid-template-columns: 1fr; }
+  .rep-paper { padding: 22px 16px; }
+  .rep-cols { grid-template-columns: 1fr; }
+  .rep-kpis { grid-template-columns: repeat(2, 1fr); }
+  .rm-dot b { font-size: 9px; }
+}
+
+@media print {
+  @page { size: A4; margin: 13mm; }
+  html, body { height: auto !important; overflow: visible !important; background: #fff !important; }
+  body > *:not(#report-layer) { display: none !important; }
+  #report-layer { position: static; padding: 0; background: #fff; overflow: visible; }
+  .rep-bar { display: none; }
+  .rep-paper { max-width: none; padding: 0; border-radius: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .rep-paper h2 { break-after: avoid; margin-top: 14px; }
+  .rep-imgs img { height: 46mm; object-fit: cover; }
+  .rep-foot { margin-top: 10px; }
+  .rep-table, .rep-cols, .rm-cards, .rep-imgs figure, .rm-ladder { break-inside: avoid; }
+}
+
+/* The way into the first-person Space Center, on the classic menu */
+.center-cta { display: inline-flex; flex-direction: column; gap: 3px; margin-top: 16px; padding: 14px 26px; border-radius: 14px; background: var(--amber); color: #1b1200; text-decoration: none; box-shadow: 0 8px 30px rgba(255, 181, 71, .28); }
+.center-cta b { font-size: 18px; }
+.center-cta span { font-size: 13px; opacity: .8; }
+.center-cta:hover { filter: brightness(1.08); }
+
+/* Cloud cover measured from the NASA image */
+.rep-cloud { margin: 6px 0 2px; font-size: 12.5px; font-weight: 600; }

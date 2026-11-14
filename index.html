@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Majan Mission | مهمة مجان</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2210%22 fill=%22%234de8ff%22/%3E%3Cellipse cx=%2216%22 cy=%2216%22 rx=%2215%22 ry=%225%22 fill=%22none%22 stroke=%22%23ffb547%22 stroke-width=%222%22 transform=%22rotate(-25 16 16)%22/%3E%3C/svg%3E">
+  <link href="vendor/fonts/fonts.css" rel="stylesheet"><!-- saved copy of Google Fonts, works offline -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style3.css">
+  <link rel="stylesheet" href="style4.css">
+  <link rel="stylesheet" href="style-phone.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/build/three.module.js",
+        "three/addons/": "./vendor/three/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+  <canvas id="confetti"></canvas>
+
+  <header id="rail" class="glass">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div><b data-i18n="title"></b><small class="mono" id="timecode">T+00:00:00</small></div>
+    </div>
+    <nav id="steps">
+      <span data-step="build" data-i18n="step_build"></span>
+      <span data-step="launch" data-i18n="step_launch"></span>
+      <span data-step="orbit" data-i18n="step_orbit"></span>
+    </nav>
+    <div class="rail-right">
+      <div id="rank" class="chip"><span id="rank-name"></span><div class="xpbar"><i id="xp-fill"></i></div></div>
+      <div id="stars-chip" class="chip">★ <span id="stars-total">0</span></div>
+      <button id="btn-sound" class="chip-btn" type="button"></button>
+      <button id="btn-lang" class="chip-btn" type="button"></button>
+    </div>
+  </header>
+
+  <section id="screen-menu" class="screen" hidden>
+    <div class="hero">
+      <div class="eyebrow">NASA Space Apps 2026 · Challenge 13 · Ibra</div>
+      <h1 data-i18n="title"></h1>
+      <p data-i18n="subtitle"></p>
+      <a id="btn-center" class="center-cta" href="center.html"><b data-i18n="center_cta"></b><span data-i18n="center_sub"></span></a>
+    </div>
+    <div id="players" class="players"></div>
+    <h2 class="section-label mono" data-i18n="missions"></h2>
+    <div id="mission-list"></div>
+    <div id="quiz-stats" class="quiz-stats" hidden></div>
+    <div class="menu-links">
+      <button id="btn-how" class="chip-btn" type="button" data-i18n="how_btn"></button>
+      <button id="btn-board" class="chip-btn" type="button" data-i18n="lb_btn"></button>
+      <button id="btn-nasa" class="chip-btn" type="button" data-i18n="nr_btn"></button>
+      <button id="btn-about" class="chip-btn" type="button" data-i18n="ab_btn"></button>
+    </div>
+  </section>
+
+  <section id="screen-build" class="screen" hidden>
+    <aside id="parts" class="glass panel brackets">
+      <div class="panel-head"><div class="eyebrow" id="build-mission"></div><h2 id="build-goal"></h2><div class="mmeta" id="build-meta"></div></div>
+      <button id="cml" class="cml" type="button"></button>
+      <div id="turnbar" class="turnbar" hidden></div>
+      <div id="tabs" class="tabs"></div>
+      <div id="slots"></div>
+      <button id="btn-turn" class="turn-btn" type="button" hidden></button>
+    </aside>
+    <div id="mobile-bar" class="mobile-bar glass">
+      <div class="seg" role="tablist">
+        <button id="mb-design" class="on" type="button" role="tab"><span data-i18n="mb_design"></span></button>
+        <button id="mb-status" type="button" role="tab"><span data-i18n="mb_status"></span><span id="mb-stars" class="mb-stars"></span></button>
+      </div>
+      <button id="mb-launch" class="cta mb-launch" type="button"><span data-i18n="btn_launch"></span></button>
+    </div>
+    <aside id="telemetry" class="glass panel brackets">
+      <div class="tele-top">
+        <button id="btn-review" class="chip-btn" type="button"></button>
+        <button id="btn-eng" class="chip-btn eng-btn" type="button" data-i18n="eng_btn"></button>
+      </div>
+      <div class="meter" id="m-budget"><div class="row"><span data-i18n="bar_budget"></span><span class="val"></span></div><div class="track"><div class="fill"></div><div class="mark"></div></div></div>
+      <div class="meter" id="m-power"><div class="row"><span data-i18n="bar_power"></span><span class="val"></span></div><div class="track"><div class="fill"></div><div class="mark"></div></div></div>
+      <div class="meter" id="m-mass"><div class="row"><span data-i18n="bar_mass"></span><span class="val"></span></div><div class="track"><div class="fill"></div><div class="mark"></div></div></div>
+      <div class="meter" id="m-data"><div class="row"><span data-i18n="bar_data"></span><span class="val"></span></div><div class="track"><div class="fill"></div><div class="mark"></div></div></div>
+      <div class="meter" id="m-fit"><div class="row"><span data-i18n="bar_fit"></span><span class="val"></span></div><div class="track"><div class="fill"></div><div class="mark"></div></div></div>
+      <div class="meter" id="m-life"><div class="row"><span data-i18n="bar_life"></span><span class="val"></span></div><div class="track"><div class="fill"></div><div class="mark"></div></div></div>
+      <div id="eng" class="eng" hidden></div>
+      <div class="forecast">
+        <div class="line"><span data-i18n="forecast"></span><span id="fc-cov"></span></div>
+        <div class="stars" id="fc-stars"></div>
+        <div class="line"><span id="fc-odds"></span></div>
+        <div class="fc-note" data-i18n="fc_note"></div>
+      </div>
+      <div class="tip" id="tip"></div>
+      <button id="btn-launch" class="cta" type="button" data-i18n="btn_launch"></button>
+      <button id="btn-to-menu" class="ghost" type="button" data-i18n="btn_menu"></button>
+    </aside>
+  </section>
+
+  <section id="screen-flight" class="screen" hidden>
+    <div id="flight-text"></div>
+  </section>
+
+  <section id="screen-orbit" class="screen" hidden>
+    <div id="hud" class="glass brackets">
+      <div class="eyebrow" id="hud-mission"></div>
+      <div class="hud-orbit mono" id="hud-orbit"></div>
+      <div class="hour" id="hud-hour"></div>
+      <div class="meter" id="h-battery"><div class="row"><span data-i18n="hud_battery"></span><span class="val"></span></div><div class="track"><div class="fill"></div></div></div>
+      <div class="meter" id="h-map"><div class="row"><span data-i18n="hud_map"></span><span class="val"></span></div><div class="track"><div class="fill"></div></div></div>
+      <div class="status" id="hud-status"></div>
+      <button id="btn-speed" class="ghost" type="button"></button>
+    </div>
+    <div id="event" class="glass modal brackets" hidden>
+      <div class="eyebrow">⚠ Mission control</div>
+      <div class="ev-role" id="ev-role" hidden></div>
+      <h2 id="ev-title"></h2>
+      <p id="ev-text"></p>
+      <p class="real" id="ev-real"></p>
+      <button class="choice" id="ev-a" type="button"></button>
+      <button class="choice risk" id="ev-b" type="button"></button>
+    </div>
+    <div id="timeline" class="timeline glass"></div>
+    <div class="credit mono" data-i18n="credit"></div>
+  </section>
+
+  <section id="screen-results" class="screen" hidden>
+    <div class="glass modal results brackets" id="results"></div>
+  </section>
+
+  <div id="quiz-layer" class="layer" hidden><div id="quiz" class="glass modal brackets quiz"></div></div>
+  <div id="info-layer" class="layer" hidden><div id="info" class="glass modal brackets info"></div></div>
+
+  <div id="toasts"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
