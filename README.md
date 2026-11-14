@@ -2,7 +2,14 @@
 
 3D browser game for NASA Space Apps 2026, Challenge 13 (Space Mission Design Game). Team Majan Mission, Ibra.
 
-## Run the game
+## Play online
+
+- **The game (first-person Space Center):** https://maahf1.github.io/majan-mission-game/center.html
+- Quick design mode: https://maahf1.github.io/majan-mission-game/index.html
+
+It opens in a web browser on a laptop or a phone, in Arabic or English, with no login and nothing to install. On a phone, turn it sideways: the stick on the left walks, dragging on the screen looks around, and the USE button is on the right.
+
+## Run the game on your own computer
 
 ```bash
 node game/serve.js
@@ -158,7 +165,7 @@ What the first-person version adds on top of the shared rules:
 
 - **Team play**: the "Players" button (1 to 4) shares the four roles of `rules.js` (`ROLES`, `rolesFor`). The office computer and Mission Control say whose decision each part is, the mission console gets `team=N`, an event names the role in charge and the results show the team report. Check: `node tools/check-team-cloud.mjs` (also checks the cloud rule).
 - **Phones** (`center-phone.css`, `style-phone.css`): on a touch device the body gets the class `touch`. A stick on the left (push it all the way to run), drag to look, a USE button that lights up when there is something to use, a DROP button while carrying a box, and a short tap on the picture also uses. The top bar keeps money and stars and folds the rest into a menu; the objectives show the current step and open on a tap; cards fit a phone held sideways; the game asks for full screen and landscape where the browser allows it. The picture pipeline is lighter (no 4x anti-aliasing, no glow pass on low graphics). The mission console hides its own header (`body.embed`) and lays out the orbit screen for short screens. Check: `node tools/shot.mjs steps.json --touch --size 844x390`. Not yet tried on a real phone.
-- **A link for phones** (`tools/share-link.mjs`): a temporary public link through an SSH tunnel (localhost.run), or `--lan` for the same Wi-Fi, or `--url` for a permanent address; writes `submission/play-link.txt`, `qr-play.png`, `qr-play.svg` and `scan-to-play.html`. `node tools/check-paths.mjs` checks the letter case of every file reference before publishing on a web host.
+- **A link for phones** (`tools/share-link.mjs`): a temporary public link through an SSH tunnel (localhost.run), or `--lan` for the same Wi-Fi, or `--url` for a permanent address (the published copy is on GitHub Pages; `tools/publish-github.ps1` uploads a new version); writes `submission/play-link.txt`, `qr-play.png`, `qr-play.svg` and `scan-to-play.html`. `node tools/check-paths.mjs` checks the letter case of every file reference before publishing on a web host.
 - **Omani identity**: a crenellated roof line, a sadu rug and a coffee set with a dallah in the office, date palms, the flag (`js/center/polish.js`).
 - **Duqm Space Settlement** (`js/center/settlement.js`): an analog habitat north-east of the building, seen from the clean room window: a central dome, four arms, eight pods, an airlock, two rovers. Our own model, inspired by the Space Settlement Centre being built in Duqm; not the official design. The player's stars add four modules (`SETTLEMENT_STAGES`: greenhouse at 2, solar field at 4, research building at 6, landing pad at 9), each with its own colliders. The notice board at the entrance (E) opens a panel on the real project and Oman's space plans, with sources. `node tools/view-center.mjs air:30,-6,-41,-28,15 --stars 9 --clean` shows it complete from the air.
 - **Finishing touches** (`js/center/polish.js`): date palms that sway (instanced, built in code), a pavement with planters along the facade, keep-clear hatching at the loading door; inside the office, the six NASA images framed with captions and dates, and a rug.
