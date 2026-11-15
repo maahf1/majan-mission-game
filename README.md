@@ -6,6 +6,8 @@
 
 - **The game (first-person Space Center):** https://maahf1.github.io/majan-mission-game/center.html
 - Quick design mode: https://maahf1.github.io/majan-mission-game/index.html
+- 30-second demo video: https://maahf1.github.io/majan-mission-game/demo/majan-demo-30s.mp4
+- Two-minute walkthrough video (English and Arabic captions): https://maahf1.github.io/majan-mission-game/demo/majan-walkthrough.mp4
 - Pitch deck for the local judges (Arabic, animated PowerPoint, 9 MB): https://maahf1.github.io/majan-mission-game/pitch/Majan-Mission-Pitch-AR.pptx
 
 It opens in a web browser on a laptop or a phone, in Arabic or English, with no login and nothing to install. On a phone, turn it sideways: the stick on the left walks, dragging on the screen looks around, and the USE button is on the right.
