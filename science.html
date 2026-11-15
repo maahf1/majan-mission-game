@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Majan Mission · Science check</title>
+  <link href="vendor/fonts/fonts.css" rel="stylesheet">
+  <style>
+    :root { --bg: #050b18; --panel: #0c1630; --line: #22345c; --text: #eaf4ff; --soft: #b9c8de; --muted: #8193ad; --cyan: #4de8ff; --amber: #ffb547; --ok: #5ef0a8; --bad: #ff6b6b; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Space Grotesk', 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif; line-height: 1.6; }
+    [dir="rtl"] body { font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif; }
+    main { max-width: 1040px; margin: 0 auto; padding: 28px 20px 60px; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+    .eyebrow { color: var(--amber); font-weight: 700; letter-spacing: .12em; font-size: 12px; text-transform: uppercase; }
+    [dir="rtl"] .eyebrow { letter-spacing: 0; font-size: 14px; }
+    h1 { margin: 4px 0 6px; font-size: clamp(28px, 4.4vw, 44px); line-height: 1.15; }
+    .lead { color: var(--soft); max-width: 66ch; margin: 0; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; }
+    .btn.primary { background: var(--cyan); color: #04111d; border-color: var(--cyan); }
+    .btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+    .score { margin: 22px 0 8px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    .score .n { font-size: clamp(48px, 9vw, 84px); font-weight: 700; line-height: 1; color: var(--ok); font-variant-numeric: tabular-nums; }
+    .score .n.bad { color: var(--bad); }
+    .score .t { font-size: clamp(16px, 2.2vw, 21px); color: var(--text); font-weight: 600; }
+    .when { color: var(--muted); font-size: 13.5px; margin: 0 0 18px; }
+    section { margin-top: 22px; }
+    h2 { font-size: 19px; margin: 0 0 2px; color: var(--cyan); }
+    .why { color: var(--soft); font-size: 14.5px; margin: 0 0 10px; max-width: 78ch; }
+    .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+    table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    th, td { text-align: start; padding: 11px 16px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 14.5px; }
+    tr:last-child td { border-bottom: 0; }
+    th { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    [dir="rtl"] th { letter-spacing: 0; font-size: 13px; }
+    td.num { font-family: 'JetBrains Mono', 'IBM Plex Sans Arabic', monospace; font-variant-numeric: tabular-nums; white-space: nowrap; direction: ltr; text-align: start; }
+    [dir="rtl"] td.num { text-align: right; }
+    td.src { color: var(--muted); font-size: 13px; }
+    .tag { display: inline-block; min-width: 62px; text-align: center; padding: 3px 10px; border-radius: 99px; font-size: 12.5px; font-weight: 700; }
+    .tag.ok { background: rgba(94, 240, 168, .14); color: var(--ok); border: 1px solid rgba(94, 240, 168, .45); }
+    .tag.bad { background: rgba(255, 107, 107, .14); color: var(--bad); border: 1px solid rgba(255, 107, 107, .5); }
+    .tag.live { background: rgba(77, 232, 255, .12); color: var(--cyan); border: 1px solid rgba(77, 232, 255, .45); }
+    .foot { margin-top: 26px; color: var(--muted); font-size: 13.5px; max-width: 82ch; }
+    .foot code { font-family: 'JetBrains Mono', monospace; color: var(--soft); font-size: 12.5px; }
+    #wait { color: var(--soft); margin: 30px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <div class="eyebrow" id="t-eyebrow"></div>
+      <h1 id="t-title"></h1>
+      <p class="lead" id="t-lead"></p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btn-lang" type="button"></button>
+      <a class="btn primary" id="btn-play" href="center.html"></a>
+    </div>
+  </header>
+
+  <div class="score" id="score" hidden><span class="n" id="score-n"></span><span class="t" id="score-t"></span></div>
+  <p class="when" id="when" hidden></p>
+  <p id="wait"></p>
+  <div id="groups"></div>
+  <p class="foot" id="t-foot"></p>
+</main>
+
+<script type="module">
+import { runChecks } from './js/sciencecheck.js';
+
+const TEXT = {
+  en: {
+    eyebrow: 'Majan Mission · NASA Space Apps 2026', title: 'Science check', lang: 'العربية', play: 'Play the game',
+    lead: 'Every figure on this page is computed in your browser, now, from the same rules the game plays with, and set beside physics or a figure NASA publishes. Nothing here is typed in as a result.',
+    wait: 'Running the checks…', pass: '{ok} of {n} checks pass', when: 'Computed in this browser at {time}. Reload the page to run them again.',
+    h_check: 'Check', h_ours: 'The game', h_ref: 'Reference', h_src: 'Source', h_res: 'Result', ok: 'PASS', bad: 'FAIL', live: 'LIVE',
+    g_kepler: 'The game\'s three orbits', w_kepler: 'The time for one lap that the game uses for each orbit, against Kepler\'s third law. Allowed difference: half a minute.',
+    g_real: 'The same formula against real NASA missions', w_real: 'Kepler\'s law at each mission\'s height, against the orbit period on NASA\'s mission page. Allowed difference: 0.6 minutes.',
+    g_sun: 'Sunlight and shadow', w_sun: 'Solar panels work only in sunlight. The share of each lap in the Sun that the game uses, against the geometry of Earth\'s shadow. Allowed difference: 3 points.',
+    g_cloud: 'Cloud cover from NASA images', w_cloud: 'The game\'s cloud rule uses the cloud cover measured in NASA\'s MODIS image of each target. This page measures the same images again, pixel by pixel. Allowed difference: 2 points.',
+    g_rules: 'Every design, counted', w_rules: 'The page builds every design the game allows for all three missions and checks the rules on each one.',
+    g_live: 'Live from NASA', w_live: 'If this device is online, the page asks NASA GIBS for the newest complete MODIS image of Dhofar and measures it. In the game the player can fly a mission under the sky of any day since 2000.',
+    k_orbit: 'One lap at {alt} km', k_real: '{name} ({alt} km)', k_sun: 'Share of a lap in sunlight at {alt} km (Sun angle {beta}°)',
+    k_cloud: '{region}, NASA image of {date}', k_rule_cam: 'Khareef mission: a ground-looking camera loses', k_rule_radar: 'Khareef mission: radar loses',
+    k_all: 'Launchable designs that leave orbit later than the limit ({ok} launchable of {total} built)', k_mass: 'Launchable designs heavier than their rocket can lift', k_cost: 'Launchable designs over budget, or with a cost that does not add up',
+    k_fair: '{mission}: three-star designs', k_live: 'Dhofar, NASA image of {date}', k_live_none: 'Dhofar: no complete image in the last four days', k_live_off: 'Dhofar: no connection to NASA GIBS from this device',
+    v_none: '{v} designs', v_limit: 'within {y} years', v_three: '{n} designs in {o} orbits', v_more: 'more than one', v_live: 'measured now', no_image: 'image not found',
+    src_kepler: 'Kepler\'s third law', src_shadow: 'Earth-shadow geometry', src_modis: 'NASA GIBS · MODIS Terra', src_rule: 'the game\'s cloud rule', src_tables: 'the parts tables', src_challenge: 'challenge text: "rarely a single perfect solution"',
+    r_aflaj: 'Al Hajar (aflaj)', r_khareef: 'Dhofar (Khareef)', r_dunes: 'Sharqiya Sands',
+    foot: 'How to read this. The game\'s numbers are simplified for teaching; this page shows how far each one is from the physics. Source code of these checks: <code>js/sciencecheck.js</code>, rules: <code>js/rules.js</code>, in the public repository. Sun angle: 0° for the low orbit (the longest shadow), 22° for a sun-synchronous orbit that crosses the equator at 10:30.',
+  },
+  ar: {
+    eyebrow: 'مهمة مجان · تحدي ناسا لتطبيقات الفضاء 2026', title: 'الفحص العلمي', lang: 'English', play: 'العب اللعبة',
+    lead: 'كل رقم في هذه الصفحة يُحسب الآن في متصفحك، من القواعد نفسها التي تعمل بها اللعبة، ويوضع بجانب الفيزياء أو رقم منشور من ناسا. لا توجد هنا نتيجة مكتوبة مسبقًا.',
+    wait: 'نجري الفحوص…', pass: 'نجح {ok} من {n} فحصًا', when: 'حُسبت في هذا المتصفح الساعة {time}. أعد تحميل الصفحة لتُحسب من جديد.',
+    h_check: 'الفحص', h_ours: 'اللعبة', h_ref: 'المرجع', h_src: 'المصدر', h_res: 'النتيجة', ok: 'ناجح', bad: 'فاشل', live: 'مباشر',
+    g_kepler: 'مدارات اللعبة الثلاثة', w_kepler: 'زمن الدورة الذي تستعمله اللعبة لكل مدار، مقابل قانون كبلر الثالث. الفرق المسموح: نصف دقيقة.',
+    g_real: 'القانون نفسه مقابل مهمات ناسا الحقيقية', w_real: 'قانون كبلر عند ارتفاع كل مهمة، مقابل زمن الدورة المنشور في صفحة المهمة عند ناسا. الفرق المسموح: 0.6 دقيقة.',
+    g_sun: 'الشمس والظل', w_sun: 'الألواح تعمل في ضوء الشمس فقط. نسبة الدورة في الشمس التي تستعملها اللعبة، مقابل هندسة ظل الأرض. الفرق المسموح: 3 نقاط.',
+    g_cloud: 'غطاء السحب من صور ناسا', w_cloud: 'قاعدة السحب في اللعبة تستعمل غطاء السحب المقاس في صورة ناسا MODIS لكل هدف. هذه الصفحة تقيس الصور نفسها من جديد، بكسلًا بكسلًا. الفرق المسموح: نقطتان.',
+    g_rules: 'كل التصاميم، معدودة', w_rules: 'الصفحة تبني كل تصميم تسمح به اللعبة للمهمات الثلاث وتفحص القواعد على كل واحد.',
+    g_live: 'مباشر من ناسا', w_live: 'إن كان الجهاز متصلًا، تطلب الصفحة من NASA GIBS أحدث صورة MODIS كاملة لظفار وتقيسها. وفي اللعبة يستطيع اللاعب أن يطير بمهمته تحت سماء أي يوم منذ عام 2000.',
+    k_orbit: 'دورة واحدة عند {alt} كم', k_real: '{name} ({alt} كم)', k_sun: 'نسبة الدورة في الشمس عند {alt} كم (زاوية الشمس {beta}°)',
+    k_cloud: '{region}، صورة ناسا بتاريخ {date}', k_rule_cam: 'مهمة الخريف: الكاميرا التي تنظر إلى الأرض تخسر', k_rule_radar: 'مهمة الخريف: الرادار يخسر',
+    k_all: 'تصاميم تغادر المدار بعد الحد ({ok} تصميمًا يصلح للإطلاق من {total})', k_mass: 'تصاميم تصلح للإطلاق وهي أثقل مما يرفعه صاروخها', k_cost: 'تصاميم تصلح للإطلاق وهي فوق الميزانية، أو كلفتها لا تساوي مجموع قطعها',
+    k_fair: '{mission}: تصاميم بثلاث نجوم', k_live: 'ظفار، صورة ناسا بتاريخ {date}', k_live_none: 'ظفار: لا صورة كاملة في آخر أربعة أيام', k_live_off: 'ظفار: لا اتصال بخدمة NASA GIBS من هذا الجهاز',
+    v_none: '{v} تصميمًا', v_limit: 'خلال {y} سنة', v_three: '{n} تصميمًا في {o} مدارات', v_more: 'أكثر من واحد', v_live: 'قيس الآن', no_image: 'الصورة غير موجودة',
+    src_kepler: 'قانون كبلر الثالث', src_shadow: 'هندسة ظل الأرض', src_modis: 'NASA GIBS · MODIS Terra', src_rule: 'قاعدة السحب في اللعبة', src_tables: 'جداول القطع', src_challenge: 'نص التحدي: «الحل الواحد المثالي نادر»',
+    r_aflaj: 'جبال الحجر (الأفلاج)', r_khareef: 'ظفار (الخريف)', r_dunes: 'رمال الشرقية',
+    foot: 'كيف تُقرأ هذه الصفحة. أرقام اللعبة مبسّطة للتعليم، وهذه الصفحة تبيّن كم يبعد كل رقم عن الفيزياء. كود هذه الفحوص: <code>js/sciencecheck.js</code>، والقواعد: <code>js/rules.js</code>، في المستودع العام. زاوية الشمس: 0° للمدار المنخفض (أطول ظل)، و22° لمدار متزامن مع الشمس يعبر خط الاستواء الساعة 10:30.',
+  },
+};
+
+let lang = new URLSearchParams(location.search).get('lang');
+if (lang !== 'ar' && lang !== 'en') {
+  try { lang = JSON.parse(localStorage.getItem('majan-mission-v1') || '{}').lang; } catch { lang = null; }
+  if (lang !== 'ar' && lang !== 'en') lang = 'en';
+}
+const tr = (key, vars = {}) => (TEXT[lang][key] ?? key).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+const $ = (s) => document.querySelector(s);
+let rows = null;
+let ranAt = '';
+
+function draw() {
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  $('#t-eyebrow').textContent = tr('eyebrow');
+  $('#t-title').textContent = tr('title');
+  $('#t-lead').textContent = tr('lead');
+  $('#btn-lang').textContent = tr('lang');
+  $('#btn-play').textContent = tr('play');
+  $('#t-foot').innerHTML = tr('foot');
+  $('#wait').textContent = rows ? '' : tr('wait');
+  if (!rows) return;
+  const judged = rows.filter((r) => r.ok !== null);
+  const ok = judged.filter((r) => r.ok).length;
+  $('#score').hidden = false;
+  $('#score-n').textContent = `${ok}/${judged.length}`;
+  $('#score-n').classList.toggle('bad', ok !== judged.length);
+  $('#score-t').textContent = tr('pass', { ok, n: judged.length });
+  $('#when').hidden = false;
+  $('#when').textContent = tr('when', { time: ranAt });
+  const groups = $('#groups');
+  groups.textContent = '';
+  for (const g of ['kepler', 'real', 'sun', 'cloud', 'rules', 'live']) {
+    const list = rows.filter((r) => r.group === g);
+    if (!list.length) continue;
+    const sec = document.createElement('section');
+    sec.innerHTML = `<h2></h2><p class="why"></p><div class="tablewrap"><table><thead><tr><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></div>`;
+    sec.querySelector('h2').textContent = tr('g_' + g);
+    sec.querySelector('.why').textContent = tr('w_' + g);
+    ['h_check', 'h_ours', 'h_ref', 'h_src', 'h_res'].forEach((k, i) => { sec.querySelectorAll('th')[i].textContent = tr(k); });
+    const body = sec.querySelector('tbody');
+    for (const r of list) {
+      const row = document.createElement('tr');
+      const cell = (text, cls) => { const td = document.createElement('td'); if (cls) td.className = cls; td.textContent = text; row.appendChild(td); return td; };
+      cell(r.name); cell(r.ours, 'num'); cell(r.ref, 'num'); cell(r.src, 'src');
+      const res = cell('', '');
+      const tag = document.createElement('span');
+      tag.className = 'tag ' + (r.ok === null ? 'live' : r.ok ? 'ok' : 'bad');
+      tag.textContent = tr(r.ok === null ? 'live' : r.ok ? 'ok' : 'bad');
+      res.appendChild(tag);
+      body.appendChild(row);
+    }
+    groups.appendChild(sec);
+  }
+}
+
+async function run() {
+  rows = null;
+  draw();
+  rows = await runChecks(tr);
+  ranAt = new Date().toLocaleTimeString(lang === 'ar' ? 'ar' : 'en', { hour: '2-digit', minute: '2-digit' });
+  window.__science = { rows };
+  draw();
+}
+$('#btn-lang').addEventListener('click', () => { lang = lang === 'ar' ? 'en' : 'ar'; run(); });
+run();
+</script>
+</body>
+</html>

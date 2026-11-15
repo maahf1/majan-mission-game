@@ -47,3 +47,67 @@ export function imageSources(mission) {
     remote: gibsUrl(img),
   }));
 }
+
+// ---------------------------------------------------------------------------
+// Live sky: cloud cover measured, in the browser, in NASA's image of any day since 2000
+// ---------------------------------------------------------------------------
+const SAVED_COVER = JSON.parse(JSON.stringify(CLOUD_COVER));
+/** The cover measured in the saved season image (what the game uses with no internet). */
+export const savedCloud = (region) => SAVED_COVER[region];
+/** Use a cover measured live for this region (for this page only). */
+export function setCloudCover(region, cover, date) {
+  if (!SAVED_COVER[region]) return;
+  CLOUD_COVER[region] = { ...SAVED_COVER[region], cover, date, live: true };
+}
+export function resetCloudCover(region) {
+  if (SAVED_COVER[region]) CLOUD_COVER[region] = { ...SAVED_COVER[region] };
+}
+
+/** NASA's true-colour MODIS image of a mission's region on a date (YYYY-MM-DD), from NASA GIBS. */
+export function skyUrl(region, date, width = 640) {
+  const list = NASA_IMAGES[region] || [];
+  const ref = list.find((x) => x.key === SAVED_COVER[region]?.key) || list[0];
+  return gibsUrl({ layer: 'MODIS_Terra_CorrectedReflectance_TrueColor', date, bbox: ref.bbox, fmt: 'jpeg' }, width);
+}
+
+/**
+ * Cloud cover in an image, the way tools/measure-clouds.mjs measured the saved images: a pixel
+ * is cloud when it is bright and nearly colourless (the darkest of its three colours is above
+ * 165 and the colours differ by less than 45). empty = share of pixels with no data (black:
+ * the gaps between the satellite's passes). cover is the cloudy share of the pixels with data.
+ */
+export function measureCloud(img) {
+  const W = 320, H = 180;
+  const c = document.createElement('canvas');
+  c.width = W;
+  c.height = H;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.drawImage(img, 0, 0, W, H);
+  const px = g.getImageData(0, 0, W, H).data;
+  let cloud = 0, empty = 0;
+  for (let i = 0; i < px.length; i += 4) {
+    const lo = Math.min(px[i], px[i + 1], px[i + 2]);
+    const hi = Math.max(px[i], px[i + 1], px[i + 2]);
+    if (lo > 165 && hi - lo < 45) cloud++;
+    else if (hi < 4) empty++;
+  }
+  const n = W * H;
+  return { cover: cloud / Math.max(1, n - empty), empty: empty / n };
+}
+
+/** Asks NASA GIBS for the image of a day and measures it. Rejects when there is no answer. */
+export function liveSky(region, date) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    const timer = setTimeout(() => reject(new Error('timeout')), 15000);
+    img.onload = () => {
+      clearTimeout(timer);
+      try { resolve({ ...measureCloud(img), date, img, url: img.src }); } catch (e) { reject(e); }
+    };
+    img.onerror = () => { clearTimeout(timer); reject(new Error('no answer')); };
+    img.src = skyUrl(region, date);
+  });
+}
+/** A past day's date in UTC. Today's image is not complete until the satellite has passed. */
+export const yesterday = (back = 1) => new Date(Date.now() - back * 86400000).toISOString().slice(0, 10);

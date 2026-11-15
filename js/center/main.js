@@ -18,9 +18,12 @@ import '../text2.js';
 import '../text3.js';
 import '../text4.js';
 import { openReview } from '../review.js';
-import { t, tIn, fmt, pct, sep, getLang, setLang, extendText } from '../i18n.js';
+import { t, tIn, fmt, pct, sep, getLang, setLang, startLang, extendText } from '../i18n.js';
 import { sfx, setMuted, unlockAudio } from '../audio.js';
 import { profile } from '../progress.js';
+import { liveSky, setCloudCover, resetCloudCover, savedCloud, yesterday } from '../nasa.js';
+
+const sky = {};   // region -> the day's NASA image the player measured live { cover, date, img, url }
 
 extendText({
   ar: { e8_obj: 'الأهداف', e8_inst: 'الأجهزة', e8_rocket: 'مركبة الإطلاق', e8_budget: 'الميزانية', e8_power: 'الطاقة', e8_mass: 'الكتلة', e8_comms: 'الاتصالات', e8_orbit: 'المدار',
@@ -665,6 +668,8 @@ function doLaunch() {
   save();
   const q = new URLSearchParams({ center: '1', mission: c.m.id, ...d });
   if (teamSize() > 1) q.set('team', String(teamSize()));
+  const skyNow = cloudInfo(c.m);
+  if (skyNow.live) q.set('sky', `${skyNow.cover.toFixed(4)},${skyNow.date}`);   // the console flies under the same sky
   // Watch the liftoff, then fly the mission at the console, here in the center
   startLiftoff(() => openConsole(q));
 }
@@ -1287,6 +1292,63 @@ function sellBox(id) {
   renderAll();
 }
 
+// The sky over the target: the saved season image, or NASA's image of any day, measured now.
+// The measured cloud cover feeds the rule (rules.js, cloudLoss), so the shop's fit badges, the
+// forecast and the mission itself all change with it.
+let skyBusy = false;
+let skyMsg = '';
+function skyCard(m) {
+  const region = m.region || m.id;
+  const ci = cloudInfo(m);
+  const live = !!ci.live;
+  const el = document.createElement('div');
+  el.className = 'row-card sky-card';
+  const src = live && sky[region]?.url ? sky[region].url : `assets/nasa/${region}_${savedCloud(region).key.endsWith('_b') ? 'b' : 'a'}.jpg`;
+  el.innerHTML = `<h3>${t('sky_h')}</h3><p>${t('sky_p')}</p>
+    <div class="sky-row">
+      <img class="sky-img" src="${src}" alt="">
+      <div class="sky-info">
+        <div class="sky-now ${ci.cover >= 0.05 ? 'bad' : 'good'}">${t(live ? 'sky_live' : 'sky_saved', { date: ci.date, cloud: pct(ci.cover) })}</div>
+        <div class="sky-msg">${skyBusy ? t('sky_wait') : skyMsg}</div>
+        <div class="sky-btns">
+          <button type="button" data-sky="yesterday" ${skyBusy ? 'disabled' : ''}>${t('sky_btn_yesterday')}</button>
+          <input type="date" id="sky-date" min="2000-03-01" max="${yesterday()}" value="${live ? ci.date : yesterday()}">
+          <button type="button" data-sky="date" ${skyBusy ? 'disabled' : ''}>${t('sky_btn_date')}</button>
+          <button type="button" data-sky="saved" ${live && !skyBusy ? '' : 'disabled'}>${t('sky_btn_saved')}</button>
+        </div>
+      </div>
+    </div>`;
+  // The image NASA already sent is shown as it is: no second download, no empty frame
+  if (live && sky[region]?.img) { const im = sky[region].img; im.className = 'sky-img'; im.alt = ''; el.querySelector('.sky-img').replaceWith(im); }
+  el.querySelectorAll('[data-sky]').forEach((b) => b.addEventListener('click', () => chooseSky(m, b.dataset.sky, el.querySelector('#sky-date').value)));
+  return el;
+}
+async function chooseSky(m, how, dateValue) {
+  const region = m.region || m.id;
+  const redraw = () => { renderAll(); if (!$('#terminal').hidden) renderTerminal(); drawBriefScreen(); };
+  sfx.click();
+  if (how === 'saved') { resetCloudCover(region); delete sky[region]; skyMsg = ''; redraw(); return null; }
+  skyBusy = true;
+  skyMsg = '';
+  if (!$('#terminal').hidden) renderTerminal();
+  // "Yesterday" steps back a day at a time while the newest image still has gaps
+  const days = how === 'yesterday' ? [1, 2, 3, 4].map((b) => yesterday(b)) : [dateValue];
+  let got = null;
+  let failed = false;
+  for (const d of days) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) continue;
+    try {
+      const r = await liveSky(region, d);
+      if (r.empty <= 0.3) { got = r; break; }
+    } catch { failed = true; break; }
+  }
+  skyBusy = false;
+  if (got) { setCloudCover(region, got.cover, got.date); sky[region] = got; skyMsg = t('sky_done'); sfx.good(); }
+  else skyMsg = t(failed ? 'sky_fail' : 'sky_nodata');
+  redraw();
+  return got ? { cover: got.cover, date: got.date } : null;
+}
+
 function renderTerminal() {
   document.querySelectorAll('#terminal .tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
   const body = $('#term-body');
@@ -1319,6 +1381,7 @@ function renderTerminal() {
         renderAll();
       }, active ? 'active' : ''));
     });
+    if (m) body.appendChild(skyCard(m));
   } else if (tab === 'shop') {
     body.insertAdjacentHTML('beforeend', `<p class="cart-note">${t('c_shop_note')}</p>`);
     const groups = [['tab_inst', INSTRUMENTS.filter((x) => x.cost > 0)], ['tab_power', POWER.filter((x) => x.cost > 0)], ['tab_comms', COMMS.filter((x) => x.cost > 0)]];
@@ -1467,6 +1530,7 @@ function drawTerminalScreen() {
 // Mission briefing in the office: real NASA satellite images of the contract's area
 const briefImgs = {};
 function briefImage(id) {
+  if (sky[id]?.img) return sky[id].img;   // the day's image the player measured live
   if (!briefImgs[id]) {
     const img = new Image();
     img.onload = () => drawBriefScreen();
@@ -1512,7 +1576,7 @@ function drawBriefScreen() {
   const ci = cloudInfo(m);
   g.fillStyle = 'rgba(6,12,24,.82)';
   g.fillRect(x0 + 12, y0 + 12, ar ? 470 : 500, 46);
-  drawText(g, t('cloud_brief', { cloud: pct(ci.cover), date: ci.date }), ar ? x0 + 12 + 470 - 14 : x0 + 26, y0 + 43, 22, ci.cover >= 0.05 ? '#ffb547' : '#7dffb0', 700, al);
+  drawText(g, t(ci.live ? 'cloud_brief_live' : 'cloud_brief', { cloud: pct(ci.cover), date: ci.date }), ar ? x0 + 12 + 470 - 14 : x0 + 26, y0 + 43, 22, ci.cover >= 0.05 ? '#ffb547' : '#7dffb0', 700, al);
   drawText(g, 'NASA Worldview / GIBS · MODIS Terra', ar ? 50 : W - 50, H - 26, 16, '#8193ad', 600, ar ? 'left' : 'right', '"JetBrains Mono"');
   tex.needsUpdate = true;
 }
@@ -1711,7 +1775,7 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
-setLang(profile.get().lang || 'ar');
+{ const l0 = startLang(profile.get().lang); if (profile.get().lang !== l0) profile.set('lang', l0); setLang(l0); }
 setMuted(!profile.get().sound);
 resize();
 renderAll();
@@ -1722,6 +1786,28 @@ window.__center = {
   get S() { return S; }, applySatellite, world, player, camera, renderer, fx, interact, openTerminal, openMC, order, pickUp, putDown, install, takeOut, doLaunch, renderAll, sellBox,
   get target() { return target ? target.userData : null; },
   get frames() { return frames; },
-  truck, step(dt) { updateTruck(dt); updateDoor(dt); }, openBoard,
+  truck, step(dt) { updateTruck(dt); updateDoor(dt); }, openBoard, chooseSky, judgeStart,
+  get sky() { return sky; },
   probe() { const o = findTarget(); return o ? o.userData : null; },
 };
+
+// ---------------------------------------------------------------------------
+// Judge quick start (center.html?judge=1): a satellite ready at Mission Control, so a visitor
+// with two minutes can change a decision, launch and fly. A game already in progress is kept.
+// ---------------------------------------------------------------------------
+function judgeStart() {
+  if (!S.contract && !S.inFlight) {
+    S.contract = 'khareef';
+    S.sat = { inst1: 'thermal', inst2: 'wide', power: 'p2', comms: 'a2' };
+    S.plan = { orbit: 'sso', rocket: 'medium', ground: 'g1', eom: 'e1', test: 't1' };
+    S.cash = Math.max(S.cash, 50);
+    save();
+    applySatellite(false);
+  }
+  $('#start').hidden = true;
+  player.place(18.2, 9.4, Math.atan2(0, 1.95));
+  renderAll();
+  openMC();
+  $('#judge-note').hidden = false;
+}
+if (new URLSearchParams(location.search).get('judge') === '1') setTimeout(judgeStart, 700);

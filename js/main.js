@@ -12,13 +12,13 @@ import {
   DEFAULT_DESIGN, DESIGN_KEYS, NO_INSTRUMENT, SPECTRUM, DISPOSAL_LIMIT, computeDesign, disposalYears, fromLegacy,
   requirements, maturity, SOURCES, instrumentFit } from './rules.js';
 import { forecast, COMMISSION_H } from './missionsim.js';
-import { t, fmt, pct, sep, getLang, setLang, extendText } from './i18n.js';
+import { t, fmt, pct, sep, getLang, setLang, startLang, extendText } from './i18n.js';
 import './text2.js';
 import { NASA_RESOURCES } from './text3.js';
 import { openReview, cmlLadder } from './review.js';
 import { board } from './board.js';
 import { quiz } from './quiz.js';
-import { imageSources } from './nasa.js';
+import { imageSources, setCloudCover } from './nasa.js';
 import './text4.js';
 import { twinLine } from './realmissions.js';
 import { openReport } from './report.js';
@@ -1130,7 +1130,7 @@ function loop(now) {
 // ---------------------------------------------------------------------------
 // Start
 // ---------------------------------------------------------------------------
-setLang(profile.get().lang || 'ar');
+{ const l0 = startLang(profile.get().lang); if (profile.get().lang !== l0) profile.set('lang', l0); setLang(l0); }
 setMuted(!profile.get().sound);
 applyStaticText();
 launch.setLang?.(getLang());
@@ -1145,6 +1145,9 @@ if (CENTER) {
     && [full.inst1, full.inst2].every((x) => x === NO_INSTRUMENT || INSTRUMENTS.some((i) => i.id === x));
   app.designs[m.id] = valid ? { ...full } : fromLegacy(CENTER.design, m);
   app.quizAsked = true;
+  // The sky the player measured live at the office computer (cloud cover, date of NASA's image)
+  const skyQ = (qs.get('sky') || '').split(',');
+  if (skyQ.length === 2 && skyQ[0] !== '' && Number.isFinite(Number(skyQ[0]))) setCloudCover(m.region || m.id, Math.min(1, Math.max(0, Number(skyQ[0]))), skyQ[1].replace(/[^0-9-]/g, '').slice(0, 10));
   // A team at the center: the design was made at its stations, so the console starts unlocked
   const teamN = Math.min(4, Math.max(1, Number(qs.get('team')) || 1));
   app.team.players = teamN;

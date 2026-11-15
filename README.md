@@ -5,12 +5,16 @@
 ## Play online
 
 - **The game (first-person Space Center):** https://maahf1.github.io/majan-mission-game/center.html
+- **Two-minute route:** https://maahf1.github.io/majan-mission-game/center.html?judge=1&lang=en opens Mission Control with a satellite already built for the Khareef mission. Change any decision, press Launch and fly.
+- **Science check:** https://maahf1.github.io/majan-mission-game/science.html recomputes 22 checks in your browser (Kepler's third law, orbit periods NASA publishes, Earth-shadow geometry, cloud cover in NASA images, every design the game allows).
 - Quick design mode: https://maahf1.github.io/majan-mission-game/index.html
 - 30-second demo video: https://maahf1.github.io/majan-mission-game/demo/majan-demo-30s.mp4
 - Two-minute walkthrough video (English and Arabic captions): https://maahf1.github.io/majan-mission-game/demo/majan-walkthrough.mp4
 - Pitch deck for the local judges (Arabic, animated PowerPoint, 9 MB): https://maahf1.github.io/majan-mission-game/pitch/Majan-Mission-Pitch-AR.pptx
 
-It opens in a web browser on a laptop or a phone, in Arabic or English, with no login and nothing to install. On a phone, turn it sideways: the stick on the left walks, dragging on the screen looks around, and the USE button is on the right.
+It opens in a web browser on a laptop or a phone, in Arabic or English, with no login and nothing to install. The game starts in the browser's language (Arabic browsers in Arabic, all others in English); add `?lang=en` or `?lang=ar` to a link to choose, and the button in the game switches at any time.
+
+**The live NASA sky.** At the office computer, under the contracts, the player can pick yesterday or any day since 2000. The browser asks NASA GIBS for that day's MODIS Terra image of the mission's target, counts the cloud in it, and the cloud rule (instrument fit, forecast, the mission itself) follows the measured value. With no internet the saved season image stays in use. On a phone, turn it sideways: the stick on the left walks, dragging on the screen looks around, and the USE button is on the right.
 
 ## Run the game on your own computer
 
@@ -73,6 +77,7 @@ On phones (screens up to 860 px wide), the design screen shows one panel at a ti
 | `js/satparts.js` | Shows a design on the satellite model (shared with the Space Center) |
 | `js/quiz.js` | The 5-question learning check, saved results and CSV export |
 | `js/nasa.js` | Real NASA satellite images for the report (NASA GIBS, with a local copy first), and `CLOUD_COVER`: the cloud cover measured in them by `tools/measure-clouds.mjs`. `rules.js` uses it (`cloudLoss`): cameras that look at the ground lose the cloudy share, radar does not |
+| `science.html`, `js/sciencecheck.js` | The science check page: every check is computed in the browser from `rules.js`, `missionsim.js` and `nasa.js`, and set beside physics or a figure NASA publishes |
 | `js/hangar.js`, `js/launch.js`, `js/orbit.js` | The three 3D scenes (Muscat skyline, Etlaq · Duqm coast, Earth with day and night) |
 | `js/fx.js` | Bloom, tone mapping, grain, vignette, chromatic aberration |
 | `js/audio.js` | Sound effects made in code |

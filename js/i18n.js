@@ -162,6 +162,16 @@ export function setLang(l) {
   listeners.forEach((fn) => fn(l));
 }
 export function onLang(fn) { listeners.add(fn); }
+/**
+ * Language to start in: ?lang=en|ar in the link first, then the player's saved choice, then the
+ * browser's own language (Arabic browsers start in Arabic, all others in English).
+ */
+export function startLang(saved) {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'en' || q === 'ar') return q;
+  if (saved === 'en' || saved === 'ar') return saved;
+  return /^ar/i.test(navigator.language || '') ? 'ar' : 'en';
+}
 
 /** Text in a given language, whatever the current one is (labels printed in both languages). */
 export function tIn(l, key) { return TEXT[l]?.[key] ?? TEXT.en[key] ?? key; }

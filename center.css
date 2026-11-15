@@ -192,3 +192,21 @@ body.cine #liftoff { z-index: 70; }
 .st-list li b { color: #8193ad; margin-inline-end: 8px; font-family: var(--mono); }
 .st-list li.on { border-color: rgba(67,230,160,.55); background: rgba(67,230,160,.1); color: #e8f4ff; }
 .st-list li.on b { color: var(--amber); }
+
+/* The sky over the target: the saved NASA image, or a day measured live */
+.sky-card { display: block; }
+.sky-card h3 { margin-bottom: 4px; }
+.sky-row { display: flex; gap: 14px; align-items: flex-start; margin-top: 12px; }
+.sky-img { width: 220px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; border: 1px solid rgba(77, 232, 255, .35); flex: none; background: #0a1224; }
+.sky-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.sky-now { font-weight: 700; font-size: 15px; }
+.sky-now.bad { color: #ffb547; }
+.sky-now.good { color: #7dffb0; }
+.sky-msg { min-height: 1.3em; font-size: 13px; color: #b9c8de; }
+.sky-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.sky-card .sky-btns button { grid-row: auto; grid-column: auto; height: 36px; padding: 0 14px; }
+.sky-btns input[type="date"] { height: 36px; background: rgba(10, 18, 36, .9); color: #e8f4ff; border: 1px solid rgba(77, 232, 255, .4); border-radius: 10px; padding: 0 10px; font: inherit; color-scheme: dark; }
+.judge-note { margin: 10px 0 0; padding: 10px 14px; border-radius: 10px; background: rgba(255, 181, 71, .12); border: 1px solid rgba(255, 181, 71, .45); color: #ffd699; font-weight: 600; line-height: 1.6; }
+.start-links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.start-links .link { text-align: center; }
+@media (max-width: 700px) { .sky-row { flex-direction: column; } .sky-img { width: 100%; } }
