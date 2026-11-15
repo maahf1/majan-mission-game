@@ -1775,7 +1775,7 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
-{ const l0 = startLang(profile.get().lang); if (profile.get().lang !== l0) profile.set('lang', l0); setLang(l0); }
+{ const l0 = startLang(profile.savedLang()); if (profile.get().lang !== l0) profile.set('lang', l0); setLang(l0); }
 setMuted(!profile.get().sound);
 resize();
 renderAll();

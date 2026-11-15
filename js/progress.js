@@ -5,9 +5,10 @@ const KEY = 'majan-mission-v1';
 const fresh = () => ({ stars: {}, best: {}, xp: 0, badges: [], lastFailed: false, sound: true, lang: 'ar' });
 
 let state = fresh();
+let hadSaved = false;      // false on a first visit: the starting language then follows the browser
 try {
   const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-  if (saved) state = { ...fresh(), ...saved };
+  if (saved) { state = { ...fresh(), ...saved }; hadSaved = true; }
 } catch { /* private mode or blocked storage: play without saving */ }
 
 function save() {
@@ -16,6 +17,8 @@ function save() {
 
 export const profile = {
   get: () => state,
+  /** The language saved on this device, or null when nothing has been saved yet. */
+  savedLang: () => (hadSaved ? state.lang : null),
   totalStars: () => MISSIONS.reduce((n, m) => n + (state.stars[m.id] || 0), 0),
   unlocked: (m) => profile.totalStars() >= m.unlock,
   rankIndex: (xp = state.xp) => {
